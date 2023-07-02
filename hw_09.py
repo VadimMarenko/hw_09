@@ -22,34 +22,40 @@ def greeting(*args):
     result = "How can I help you?"
     return result
 
-@input_error
-def add(*args):
+def checking_args(*args):
     if args[0].isalpha():
-        name = args[0].capitalize()        
+        name = args[0].capitalize()
         phone = args[1]
-        if (phone.startswith("+") and phone[1:].isnumeric()) or phone.isnumeric():
-            phone_book.update({name: phone})
-            return f"Added name {name} with phone number {phone}"
+        if (phone.startswith("+") and phone[1:].isnumeric()) or phone.isnumeric():            
+            pass
         else:       
             return "Give me name and phone please"
     elif args[0].isdigit():
         return "Give me name and phone please"
-        
+    
+@input_error
+def add(*args):
+    result = checking_args(*args)
+    if result:
+        return result
+    else:
+        name = args[0].capitalize()
+        phone = args[1]
+        phone_book.update({name: phone})
+    return f"Added name {name} with phone number {phone}"
 
 @input_error
-def change(*args):    
-    name = args[0].capitalize()
-    phone = args[1]
-    if (phone[0] == "+" and phone[1:].isnumeric()) or phone.isnumeric():
+def change(*args): 
+    result = checking_args(*args)
+    if result:
+        return result
+    else:
+        name = args[0].capitalize()
+        phone = args[1]    
         if name in phone_book.keys():
             phone_book[name] = phone
             return f"{name}'s phone number change to {phone}"
-        else:
-            return f"{name}'s name was not found"    
-    else:       
-        return "Give me name and phone please"
         
-
 @input_error
 def phone(*args):
     if args[0].isalpha:
@@ -85,7 +91,7 @@ commands = {greeting: ("hello", ),
 def parser(text: str) -> tuple[callable, tuple[str]|None]:
     for key, value in commands.items():
         for val in value:
-            if text.startswith(val):
+            if text.startswith(val):                                
                 return key, text.replace(val, "").strip().split()
             
     return no_command, ""
